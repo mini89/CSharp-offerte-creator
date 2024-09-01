@@ -21,7 +21,7 @@ namespace offerte_creator
             InitializeComponent();
         }
         int IDKosten;
-       
+
         private void AddPart_Load(object sender, EventArgs e)
         {
             Data.listKosten.Clear();
@@ -37,7 +37,7 @@ namespace offerte_creator
             {
                 BT_Toevoegen.Text = "Aanpassen";
                 TB_PartName.Text = Data.onderdelen.title;
-                
+
                 _L_IDPart.Text = Data.onderdelen.id.ToString();
                 _NUD_TotalPart.Value = Data.onderdelen.TotaalPrijs;
                 foreach (var item in Data.onderdelen.kosten)
@@ -52,7 +52,7 @@ namespace offerte_creator
                         kostenControler.TabIndex = Data.kosten.id;
                         kostenControler._TB_Kosten.Text = Data.kosten.onderdeel;
                         kostenControler._CB_indicatie.Checked = Data.kosten.Indicatie;
-                        kostenControler._NUD_EenheidPrijs.Text = "€"+Data.kosten.Kostprijs;
+                        kostenControler._NUD_EenheidPrijs.Text = "€" + Data.kosten.Kostprijs;
                         kostenControler._TB_Eenheid.Text = Data.kosten.Eenheid;
                         if (Data.kosten.BTW9)
                         {
@@ -73,9 +73,9 @@ namespace offerte_creator
                         Control[] arr = controls.ToArray();
                         _P_Kosten.Controls.Clear();
                         _P_Kosten.Controls.AddRange(arr);
-                        if(IDKosten <= Data.kosten.id)
+                        if (IDKosten <= Data.kosten.id)
                         {
-                            IDKosten = Data.kosten.id+1;
+                            IDKosten = Data.kosten.id + 1;
                         }
                     }
                     finally { }
@@ -94,7 +94,7 @@ namespace offerte_creator
                         int point = TB_PartName.SelectionStart;
                         TB_PartName.Text = TB_PartName.Text.Substring(0, 1).ToUpper() + TB_PartName.Text.Substring(1);
                         TB_PartName.SelectionStart = point;
-                    }     
+                    }
                 }
                 catch (Exception) { }
             }
@@ -172,23 +172,23 @@ namespace offerte_creator
             Data.listKosten.Sort((c1, c2) => c1.id.CompareTo(c2.id));
             Data.onderdelen.kosten = Data.listKosten.ToArray();
             Data.onderdelen.TotaalPrijs = TotaalPrijs;
-            if(NewPart)
-            Data.listOnderdelen.Add(Data.onderdelen);
+            if (NewPart)
+                Data.listOnderdelen.Add(Data.onderdelen);
 
 
             ButtonPressed = true;
-             this.Close();
+            this.Close();
         }
 
         private void AddPart_FormClosing(object sender, FormClosingEventArgs e)
-        {            
+        {
             if (ButtonPressed)
             {
                 if (!String.IsNullOrEmpty(TB_PartName.Text.Trim()))
                 {
-                    
-                      
-                 
+
+
+
                 }
                 else
                 {

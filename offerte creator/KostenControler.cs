@@ -10,12 +10,12 @@ namespace offerte_creator
         {
             InitializeComponent();
         }
-        AddPart addpart= new AddPart();
+        AddPart addpart = new AddPart();
         private void KostenControler_Load(object sender, EventArgs e)
         {
             _TB_Eenheid.Items.AddRange(Properties.Settings.Default.Eenheid_Data.Split('|'));
             addpart = (AddPart)this.ParentForm;
-            Data.kosten.id = int.Parse(_L_IDkosten.Text);           
+            Data.kosten.id = int.Parse(_L_IDkosten.Text);
             if (String.IsNullOrEmpty(Data.kosten.Eenheid))
                 _TB_Eenheid.Text = " ";
             Data.listKosten.Add(Data.kosten);
@@ -33,21 +33,21 @@ namespace offerte_creator
         {
             try
             {
-                decimal tot = 0.00M;               
-                decimal EenheidPrijs=0.00M;
+                decimal tot = 0.00M;
+                decimal EenheidPrijs = 0.00M;
                 try
                 {
-                    EenheidPrijs = decimal.Parse(_NUD_EenheidPrijs.Text.Split('€')[1]);
+                    EenheidPrijs = decimal.Parse(_NUD_EenheidPrijs.Text.Replace("€", "").Replace(".", "").Trim());
                 }
                 catch
                 {
                     EenheidPrijs = decimal.Parse(_NUD_EenheidPrijs.Text);
                 }
                 Console.WriteLine("EenheidPrijs " + EenheidPrijs);
-                Console.WriteLine("TotalStuk " + _NUD_TotalStuk.Text);
+                Console.WriteLine("TotalStuk " + _NUD_TotalStuk.Text.Replace(".", "").Trim());
                 try
                 {
-                    _NUD_Totaal.Value = decimal.Parse(_NUD_TotalStuk.Text) * EenheidPrijs;
+                    _NUD_Totaal.Value = decimal.Parse(_NUD_TotalStuk.Text.Replace(".", "").Trim()) * EenheidPrijs;
                 }
                 catch { }
                 foreach (KostenControler item in addpart._P_Kosten.Controls)
@@ -57,10 +57,10 @@ namespace offerte_creator
                         tot += item._NUD_Totaal.Value;
                     }
                 }
-                addpart._NUD_TotalPart.Value = tot;              
+                addpart._NUD_TotalPart.Value = tot;
             }
             finally { }
-         
+
         }
         public void _L_Sluiten_Click(object sender, EventArgs e)
         {
@@ -73,32 +73,32 @@ namespace offerte_creator
                     int idIndex = -1;
                     foreach (var item in Data.listKosten)
                     {
-                        if(item.id == int.Parse(_L_IDkosten.Text))
+                        if (item.id == int.Parse(_L_IDkosten.Text))
                         {
                             idIndex = i;
                         }
                         i++;
                     }
                     Data.listKosten.RemoveAt(idIndex);
-                    _SomWith_ValueChanged(null,null);
+                    _SomWith_ValueChanged(null, null);
                 }
-                
+
             }
-        }       
+        }
         private void _TB_Eenheid_Leave(object sender, EventArgs e)
         {
             Boolean exist = false;
             foreach (var item in _TB_Eenheid.Items)
             {
-                if (String.Equals(item.ToString().ToLower().Trim(), _TB_Eenheid.Text.ToLower().Trim())||_TB_Eenheid.Text.Length<1)
+                if (String.Equals(item.ToString().ToLower().Trim(), _TB_Eenheid.Text.ToLower().Trim()) || _TB_Eenheid.Text.Length < 1)
                 {
                     exist = true;
                 }
             }
-            if (!exist && !String.IsNullOrWhiteSpace(_TB_Eenheid.Text.Trim()) &&_TB_Eenheid.Text.Trim().Length>1)
+            if (!exist && !String.IsNullOrWhiteSpace(_TB_Eenheid.Text.Trim()) && _TB_Eenheid.Text.Trim().Length > 1)
             {
-                DialogResult result = MessageBox.Show("Er is een nieuwe eenheid ingevoerd. Wil je de nieuwe eenheid toevoegen aan de database?", "Nieuwe eenheid",MessageBoxButtons.YesNo,MessageBoxIcon.Information,MessageBoxDefaultButton.Button1);
-                if(result == DialogResult.Yes)
+                DialogResult result = MessageBox.Show("Er is een nieuwe eenheid ingevoerd. Wil je de nieuwe eenheid toevoegen aan de database?", "Nieuwe eenheid", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                if (result == DialogResult.Yes)
                 {
                     String ArrayString = null;
                     foreach (var item in Properties.Settings.Default.Eenheid_Data.Split('|'))
@@ -112,7 +112,7 @@ namespace offerte_creator
                             ArrayString = ArrayString + "|" + item;
                         }
                     }
-                    ArrayString = ArrayString+"|"+ _TB_Eenheid.Text.Trim();
+                    ArrayString = ArrayString + "|" + _TB_Eenheid.Text.Trim();
                     foreach (KostenControler item in addpart._P_Kosten.Controls)
                     {
                         item._TB_Eenheid.Items.Add(_TB_Eenheid.Text);
@@ -125,27 +125,17 @@ namespace offerte_creator
         {
             _NUD_EenheidPrijs.Select(1, _NUD_EenheidPrijs.Text.Length);
         }
-        
+
         //TODO Legen lijn die die zelf toevoegd        
-        
+
 
         private void _TB_EenheidPrijs_TextChanged(object sender, EventArgs e)
         {
-            if (_NUD_EenheidPrijs.Text.Contains("."))
-            {
-                _NUD_EenheidPrijs.Text = _NUD_EenheidPrijs.Text.Replace('.', ',');
-                // Plaats de cursor aan het einde van de tekst
-                _NUD_EenheidPrijs.SelectionStart = _NUD_EenheidPrijs.Text.Length;
-            }
+
         }
         private void _TB_TotaalStuk_TextChanged(object sender, EventArgs e)
         {
-            if (_NUD_TotalStuk.Text.Contains("."))
-            {
-                _NUD_TotalStuk.Text = _NUD_TotalStuk.Text.Replace('.', ',');
-                // Plaats de cursor aan het einde van de tekst
-                _NUD_TotalStuk.SelectionStart = _NUD_TotalStuk.Text.Length;
-            }
+
         }
 
         private void _TB_EenheidPrijs_KeyPress(object sender, KeyPressEventArgs e)
@@ -154,14 +144,18 @@ namespace offerte_creator
             {
                 e.Handled = true; // Negeer het teken
             }
-        }       
+            if (e.KeyChar == '.')
+            {
+                e.KeyChar = ',';
+            }
+        }
 
         private void _TB_EenheidPrijs_Leave(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(_NUD_EenheidPrijs.Text))
             {
                 // Verwijder het euroteken tijdelijk voor conversie
-                string textWithoutEuro = _NUD_EenheidPrijs.Text.Replace("€", "").Trim();
+                string textWithoutEuro = _NUD_EenheidPrijs.Text.Replace("€", "").Replace(".", "").Trim();
                 decimal value;
                 // Probeer de tekst om te zetten naar een decimaal
                 if (decimal.TryParse(textWithoutEuro, NumberStyles.Any, CultureInfo.CurrentCulture, out value))

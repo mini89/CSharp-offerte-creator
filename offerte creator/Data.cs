@@ -119,5 +119,101 @@ namespace offerte_creator
                 Properties.Settings.Default.Save();
             }
         }
+        public static string CompanyAdres
+        {
+            get
+            {
+                return Properties.Settings.Default.CompanyAdres;
+            }
+            set
+            {
+                Properties.Settings.Default.CompanyAdres = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+        public static string CompanyZipcode
+        {
+            get
+            {
+                return Properties.Settings.Default.CompanyZipcode;
+            }
+            set
+            {
+                Properties.Settings.Default.CompanyZipcode = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+        public static string CompanyTown
+        {
+            get
+            {
+                return Properties.Settings.Default.CompanyTown;
+            }
+            set
+            {
+                Properties.Settings.Default.CompanyTown = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+        public static string CompanyPhone
+        {
+            get
+            {
+                return Properties.Settings.Default.CompanyPhone;
+            }
+            set
+            {
+                Properties.Settings.Default.CompanyPhone = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+        public static string CompanyEmail
+        {
+            get
+            {
+                return Properties.Settings.Default.CompanyEmail;
+            }
+            set
+            {
+                Properties.Settings.Default.CompanyEmail = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+        public static string CompanyKvK
+        {
+            get
+            {
+                return Properties.Settings.Default.CompanyKvK;
+            }
+            set
+            {
+                Properties.Settings.Default.CompanyKvK = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+        public static string CompanyBTW
+        {
+            get
+            {
+                return Properties.Settings.Default.CompanyBTW;
+            }
+            set
+            {
+                Properties.Settings.Default.CompanyBTW = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+        public static string CompanyBank
+        {
+            get
+            {
+                return Properties.Settings.Default.CompanyBank;
+            }
+            set
+            {
+                Properties.Settings.Default.CompanyBank = value;
+                Properties.Settings.Default.Save();
+            }
+        }       
     }
  }

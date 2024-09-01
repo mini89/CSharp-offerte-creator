@@ -20,12 +20,25 @@ namespace offerte_creator
         public Form_Main()
         {
             InitializeComponent();
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            string tempFilePath = Path.Combine(Path.GetTempPath(), "setup.exe");
+            if (File.Exists(tempFilePath))
+            {
+                File.Delete(tempFilePath); // Verwijder het oude bestand indien nodig
+            }
             LoadPlugins();
             ConfigurePlugins();
         }
         //START PLUGIN GEDEELTE
-        private void LoadPlugins()
+        public void LoadPlugins()
         {
+            String[] tempFiles = Directory.GetFiles(pathDocuments + "\\offerte creator\\");
+
+            foreach (var item in tempFiles)
+            {
+                File.Delete(pathDocuments + "\\offerte creator\\" + item.Split('\\')[5]);
+            }
+            _plugins.Clear();
             string pluginsPath = Path.Combine(pathDocuments+ "\\offerte creator\\", "Plugins");
             if (!Directory.Exists(pluginsPath))
             {
@@ -54,7 +67,7 @@ namespace offerte_creator
             _plugins.Clear(); // Optioneel: leeg de lijst met plugins na stoppen
         }
 
-        private void ConfigurePlugins()
+        public void ConfigurePlugins()
         {
             foreach (var plugin in _plugins)
             {
@@ -105,7 +118,7 @@ namespace offerte_creator
 
 
 
-                TB_Totaal.Text = "€ "+tot.ToString("0.00", CultureInfo.GetCultureInfo("nl-NL"));
+                TB_Totaal.Text = "€ "+tot.ToString("#,##0.00", CultureInfo.GetCultureInfo("nl-NL"));
 
 
 
@@ -170,7 +183,7 @@ namespace offerte_creator
 
 
 
-                TB_Totaal.Text = "€ "+tot.ToString("0.00", CultureInfo.GetCultureInfo("nl-NL"));
+                TB_Totaal.Text = "€ "+tot.ToString("#,##0.00", CultureInfo.GetCultureInfo("nl-NL"));
             }
         }
         //Openen van opgeslagen offertes
@@ -219,7 +232,7 @@ namespace offerte_creator
                     tot += onderdeel.TotaalPrijs;
                     _P_Parts.Controls.Add(partsController);
                 }
-                TB_Totaal.Text = "€ "+tot.ToString("0.00", CultureInfo.GetCultureInfo("nl-NL"));
+                TB_Totaal.Text = "€ "+tot.ToString("#,##0.00", CultureInfo.GetCultureInfo("nl-NL"));
                 TB_CustomersName.Text = Data.customer.Name;
                 String[] Adres = Data.customer.Adres.Split('|');
                 TB_Street.Text = Adres[0];
@@ -314,7 +327,9 @@ namespace offerte_creator
                 decimal tot = 0.00M;
                 //Toevoegen van onderdeel aan offerte
                 _P_Parts.Controls.Clear();
+                //int IDOrder = Data.listOnderdelen.Count;
                 int IDOrder = Data.listOnderdelen.Count;
+                Data.listOnderdelen.Sort((c2, c1) => c1.id.CompareTo(c2.id));
                 foreach (var onderdeel in Data.listOnderdelen)
                 {
                     PartsController partsController2 = new PartsController();
@@ -335,7 +350,7 @@ namespace offerte_creator
                     tot += onderdeel.TotaalPrijs;
                     _P_Parts.Controls.Add(partsController2);
                 }
-                TB_Totaal.Text = "€ "+tot.ToString("0.00", CultureInfo.GetCultureInfo("nl-NL"));
+                TB_Totaal.Text = "€ "+tot.ToString("#,##0.00", CultureInfo.GetCultureInfo("nl-NL"));
             }
 
         }

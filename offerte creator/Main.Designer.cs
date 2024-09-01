@@ -329,13 +329,14 @@
             // 
             // TB_Totaal
             // 
-            this.TB_Totaal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.TB_Totaal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.TB_Totaal.Enabled = false;
-            this.TB_Totaal.Location = new System.Drawing.Point(417, 16);
+            this.TB_Totaal.Location = new System.Drawing.Point(406, 17);
             this.TB_Totaal.Name = "TB_Totaal";
             this.TB_Totaal.ReadOnly = true;
-            this.TB_Totaal.Size = new System.Drawing.Size(86, 20);
-            this.TB_Totaal.TabIndex = 6;
+            this.TB_Totaal.Size = new System.Drawing.Size(97, 20);
+            this.TB_Totaal.TabIndex = 7;
+            this.TB_Totaal.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // L_Totaal
             // 
@@ -482,7 +483,7 @@
             this.MinimumSize = new System.Drawing.Size(525, 480);
             this.Name = "Form_Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Offerte creator";
+            this.Text = "Offerte Creator";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Form_Main_Load);
             this.GB_Customers.ResumeLayout(false);
@@ -519,7 +520,6 @@
         private System.Windows.Forms.GroupBox GB_Parts;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label L_Totaal;
-        public System.Windows.Forms.TextBox TB_Totaal;
         public System.Windows.Forms.Panel _P_Parts;
         private System.Windows.Forms.ToolStripMenuItem instellingenToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openFileDialogLogo;
@@ -543,6 +543,7 @@
         public System.Windows.Forms.ToolStripMenuItem createOfferteToolStripMenuItem;
         public System.Windows.Forms.SaveFileDialog saveFileDialogPDF;
         public System.Windows.Forms.MenuStrip menuStrip1;
+        public System.Windows.Forms.TextBox TB_Totaal;
     }
 }
 

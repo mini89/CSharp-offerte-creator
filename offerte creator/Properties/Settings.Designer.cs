@@ -58,5 +58,125 @@ namespace offerte_creator.Properties {
                 this["OfferteNumber"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CompanyAdres {
+            get {
+                return ((string)(this["CompanyAdres"]));
+            }
+            set {
+                this["CompanyAdres"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CompanyZipcode {
+            get {
+                return ((string)(this["CompanyZipcode"]));
+            }
+            set {
+                this["CompanyZipcode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CompanyKvK {
+            get {
+                return ((string)(this["CompanyKvK"]));
+            }
+            set {
+                this["CompanyKvK"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CompanyBTW {
+            get {
+                return ((string)(this["CompanyBTW"]));
+            }
+            set {
+                this["CompanyBTW"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CompanyBank {
+            get {
+                return ((string)(this["CompanyBank"]));
+            }
+            set {
+                this["CompanyBank"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CompanyPhone {
+            get {
+                return ((string)(this["CompanyPhone"]));
+            }
+            set {
+                this["CompanyPhone"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CompanyEmail {
+            get {
+                return ((string)(this["CompanyEmail"]));
+            }
+            set {
+                this["CompanyEmail"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CompanyTown {
+            get {
+                return ((string)(this["CompanyTown"]));
+            }
+            set {
+                this["CompanyTown"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LicentiePlugins {
+            get {
+                return ((string)(this["LicentiePlugins"]));
+            }
+            set {
+                this["LicentiePlugins"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LicentieCode {
+            get {
+                return ((string)(this["LicentieCode"]));
+            }
+            set {
+                this["LicentieCode"] = value;
+            }
+        }
     }
 }
