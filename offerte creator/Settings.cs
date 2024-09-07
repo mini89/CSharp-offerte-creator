@@ -28,6 +28,7 @@ namespace offerte_creator
         }
         String pathDocuments;
         Boolean replace = false;
+        int IndexPlugIn;
 
         private static readonly HttpClient client = new HttpClient();
         public Form_Main formMain;
@@ -35,8 +36,7 @@ namespace offerte_creator
         private void Settings_Load(object sender, EventArgs e)
         {
             Cursor = Cursors.WaitCursor;
-
-            string motherboardId = GetHardwareInfo("Win32_DiskDrive", "SerialNumber");
+            string motherboardId = Licentie.GetHardwareInfo("Win32_DiskDrive", "SerialNumber");
 
             if (motherboardId.Length > 64)
             {
@@ -48,6 +48,14 @@ namespace offerte_creator
             txtMacAddress.Text = motherboardId;
 
             txtLicenseKey.Text = Properties.Settings.Default.LicentieCode;
+            if (txtLicenseKey.Text.Length >= 5)
+            {
+                btnCheck.Visible = true;
+            }
+            else
+            {
+                btnCheck.Visible = false;
+            }
             foreach (var item in Properties.Settings.Default.LicentiePlugins.Split('|'))
             {
                 lstPlugins.Items.Add(item);
@@ -81,7 +89,7 @@ namespace offerte_creator
             _TB_CompanyBank.Text = SharedSettings.CompanyBank;
             try
             {
-                String extentie=null;
+                String extentie = null;
                 if (File.Exists(pathDocuments + "\\offerte creator\\image\\logo.png"))
                     extentie = ".png";
                 if (File.Exists(pathDocuments + "\\offerte creator\\image\\logo.jpg"))
@@ -160,7 +168,7 @@ namespace offerte_creator
         public void LoadPlugins()
         {
             LB_Plugins.Items.Clear();
-            string pluginsPath = Path.Combine(pathDocuments+ "\\offerte creator\\", "Plugins");          
+            string pluginsPath = Path.Combine(pathDocuments + "\\offerte creator\\", "Plugins");
 
             var pluginFiles = Directory.GetFiles(pluginsPath, "*.dll");
             foreach (var file in pluginFiles)
@@ -176,7 +184,7 @@ namespace offerte_creator
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
                     string currentVersion = version.ToString(); // De huidige versie van je software
-                    string versionUrl = "https://jhsolutions.creakim.nl/OfferteCreator/plugins/"+ Path.GetFileName(file).Split('.')[0].Trim()+ "/version.txt";
+                    string versionUrl = "https://jhsolutions.creakim.nl/OfferteCreator/plugins/" + Path.GetFileName(file).Split('.')[0].Trim() + "/version.txt";
                     string latestVersion = "";
 
                     try
@@ -192,14 +200,14 @@ namespace offerte_creator
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Kon niet controleren op updates: " + ex.Message, "error op "+ plugin.Name);
+                        MessageBox.Show("Kon niet controleren op updates: " + ex.Message, "error op " + plugin.Name);
                         LB_Plugins.Items.Add(plugin.Name + " (" + plugin.Version + ")");
                         return;
                     }
 
-                    if(plugin.Version != latestVersion)
+                    if (plugin.Version != latestVersion)
                     {
-                        LB_Plugins.Items.Add(plugin.Name + " (" + plugin.Version + ")   ->  "+latestVersion);
+                        LB_Plugins.Items.Add(plugin.Name + " (" + plugin.Version + ")   ->  " + latestVersion);
                     }
                     else
                     {
@@ -218,15 +226,15 @@ namespace offerte_creator
         {
 
             SharedSettings.CompanyName = _TB_CompanyName.Text;
-            SharedSettings.CompanyAdres = _TB_CompanyStreet.Text + "#"+_TB_CompanyNumber.Text+"#" +_TB_CompanyToevoeging.Text;
-            SharedSettings.CompanyZipcode = _TB_CompanyZipcode1.Text+"#"+ _TB_CompanyZipcode2.Text;
+            SharedSettings.CompanyAdres = _TB_CompanyStreet.Text + "#" + _TB_CompanyNumber.Text + "#" + _TB_CompanyToevoeging.Text;
+            SharedSettings.CompanyZipcode = _TB_CompanyZipcode1.Text + "#" + _TB_CompanyZipcode2.Text;
             SharedSettings.CompanyTown = _TB_CompanyTown.Text;
             SharedSettings.CompanyPhone = _TB_CompanyPhone.Text;
             SharedSettings.CompanyEmail = _TB_CompanyEmail.Text;
             SharedSettings.CompanyKvK = _TB_CompanyKvK.Text;
             SharedSettings.CompanyBTW = _TB_CompanyBTW.Text;
             SharedSettings.CompanyBank = _TB_CompanyBank.Text;
-
+            Properties.Settings.Default.LicentieCode = txtLicenseKey.Text;
             replace = true;
 
 
@@ -236,7 +244,7 @@ namespace offerte_creator
         private void Dubbel_Click_Logo(object sender, EventArgs e)
         {
             DialogResult result = openFileDialog1.ShowDialog();
-            if(result == DialogResult.OK)
+            if (result == DialogResult.OK)
             {
                 _PB_Logo.Image = Image.FromFile(openFileDialog1.FileName);
                 _PB_Logo.ImageLocation = openFileDialog1.FileName;
@@ -273,7 +281,7 @@ namespace offerte_creator
 
         private void _PB_Logo_MouseClick(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right)
             {
                 _PB_Logo.InitialImage = null;
                 _PB_Logo.Image.Dispose();
@@ -286,7 +294,8 @@ namespace offerte_creator
 
         private void Settings_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (replace) {
+            if (replace)
+            {
                 _PB_Handtekening.Image = null;
                 _PB_Handtekening.InitialImage = null;
                 _PB_Logo.Image = null;
@@ -294,8 +303,8 @@ namespace offerte_creator
                 _PB_Watermark.Image = null;
                 _PB_Watermark.InitialImage = null;
                 String extentie = null;
-            String[] files = new String[] { "logo", "watermark", "handtekening" };
-            PictureBox[] MyObjects = new PictureBox[] { _PB_Logo, _PB_Watermark, _PB_Handtekening };
+                String[] files = new String[] { "logo", "watermark", "handtekening" };
+                PictureBox[] MyObjects = new PictureBox[] { _PB_Logo, _PB_Watermark, _PB_Handtekening };
                 for (int i = 0; i < files.Length; i++)
                 {
                     Boolean exist = false;
@@ -322,47 +331,46 @@ namespace offerte_creator
                                 }
                             }
                         }
-                    if (exist)
-                    {
-                        if (MyObjects[i].ImageLocation == pathDocuments + "\\offerte creator\\image\\" + files[i] + extentie)
+                        if (exist)
                         {
+                            if (MyObjects[i].ImageLocation == pathDocuments + "\\offerte creator\\image\\" + files[i] + extentie)
+                            {
+                            }
+                            else
+                            {
+                                // Huidige afbeelding loskoppelen
+                                MyObjects[i].Image = null;
+
+                                // Vrijgeven van de huidige afbeelding resources
+                                GC.Collect();
+                                GC.WaitForPendingFinalizers();
+
+                                File.Replace(MyObjects[i].ImageLocation, pathDocuments + "\\offerte creator\\image\\" + files[i] + extentie, pathDocuments + "\\offerte creator\\" + files[i] + extentie, true);
+                                File.Delete(pathDocuments + "\\offerte creator\\" + files[i] + extentie);
+                                MyObjects[i].Image = Image.FromFile(pathDocuments + "\\offerte creator\\image\\" + files[i] + extentie);
+                            }
                         }
                         else
                         {
-                            // Huidige afbeelding loskoppelen
-                            MyObjects[i].Image = null;
-
-                            // Vrijgeven van de huidige afbeelding resources
-                            GC.Collect();
-                            GC.WaitForPendingFinalizers();
-
-                            File.Replace(MyObjects[i].ImageLocation, pathDocuments + "\\offerte creator\\image\\" + files[i] + extentie, pathDocuments + "\\offerte creator\\" + files[i] + extentie, true);
-                            File.Delete(pathDocuments + "\\offerte creator\\" + files[i] + extentie);
-                            MyObjects[i].Image = Image.FromFile(pathDocuments + "\\offerte creator\\image\\" + files[i] + extentie);
-                        }
-                    }
-                    else
-                    {
                             try
                             {
                                 File.Copy(MyObjects[i].ImageLocation, pathDocuments + "\\offerte creator\\image\\" + files[i] + Path.GetExtension(MyObjects[i].ImageLocation));
                             }
                             catch { }
-                    }
+                        }
 
                     }
                     finally { }
                 }
-            }            
+            }
         }
 
         private void bt_resetEenheidList_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.Eenheid_Data = "st|m2";
             Properties.Settings.Default.Save();
-            MessageBox.Show( "Alle eenheden zij gereset", "Reset Eenheden", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Alle eenheden zij gereset", "Reset Eenheden", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-        int IndexPlugIn;
         private void LB_Plugins_SelectedIndexChanged(object sender, EventArgs e)
         {
             _BT_RemovePlugIn.Enabled = true;
@@ -387,16 +395,16 @@ namespace offerte_creator
 
         private void LB_Plugins_Leave(object sender, EventArgs e)
         {
-            if(!_BT_RemovePlugIn.Focused)
-            _BT_RemovePlugIn.Enabled = false;
-            if(!_BT_UpdatePlugin.Focused)
-            _BT_UpdatePlugin.Enabled = false;
+            if (!_BT_RemovePlugIn.Focused)
+                _BT_RemovePlugIn.Enabled = false;
+            if (!_BT_UpdatePlugin.Focused)
+                _BT_UpdatePlugin.Enabled = false;
         }
 
         private void _BT_RemovePlugIn_Click(object sender, EventArgs e)
         {
             String deletedPluginPath = "";
-            string pluginsPath = Path.Combine(pathDocuments+ "\\offerte creator\\", "Plugins");
+            string pluginsPath = Path.Combine(pathDocuments + "\\offerte creator\\", "Plugins");
             var pluginFiles = Directory.GetFiles(pluginsPath, "*.dll");
             foreach (var file in pluginFiles)
             {
@@ -423,7 +431,7 @@ namespace offerte_creator
                     File.Delete(deletedPluginPath);
                     LB_Plugins.Items.Clear();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show("Er is iets fout gegaan met verwijderen \r\r" + ex.Message, "error delete plugin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -465,7 +473,7 @@ namespace offerte_creator
         private void _To_Upper_With_TextChanged(object sender, EventArgs e)
         {
             TextBox textBox;
-            if (sender is TextBox )
+            if (sender is TextBox)
             {
                 textBox = (TextBox)sender;
             }
@@ -473,13 +481,13 @@ namespace offerte_creator
             {
                 return;
             }
-                if (!String.IsNullOrEmpty(textBox.Text.Trim()))
-                {
-                    int point = textBox.SelectionStart;
+            if (!String.IsNullOrEmpty(textBox.Text.Trim()))
+            {
+                int point = textBox.SelectionStart;
                 textBox.Text = textBox.Text.Substring(0, 1).ToUpper() + textBox.Text.Substring(1);
                 textBox.SelectionStart = point;
-                }
-            
+            }
+
         }
 
         private void _TB_CompanyZipcode1_KeyPress(object sender, KeyPressEventArgs e)
@@ -512,7 +520,7 @@ namespace offerte_creator
         private void _TB_Next_TabIndex_TextChanged(object sender, EventArgs e)
         {
             TextBox textBox = (TextBox)sender;
-            if(textBox.Text.Length == textBox.MaxLength)
+            if (textBox.Text.Length == textBox.MaxLength)
             {
                 SelectNextControl(textBox, true, true, true, true);
             }
@@ -521,7 +529,7 @@ namespace offerte_creator
         private void _TB_CompanyPhone_KeyPress(object sender, KeyPressEventArgs e)
         {
             TextBox textBox = (TextBox)sender;
-            if (e.KeyChar == (char)Keys.Back || e.KeyChar == (char)Keys.Delete || e.KeyChar == (char)Keys.Left || e.KeyChar == (char)Keys.Right || e.KeyChar == (char)Keys.Home || e.KeyChar == (char)Keys.End )
+            if (e.KeyChar == (char)Keys.Back || e.KeyChar == (char)Keys.Delete || e.KeyChar == (char)Keys.Left || e.KeyChar == (char)Keys.Right || e.KeyChar == (char)Keys.Home || e.KeyChar == (char)Keys.End)
             {
                 return;
             }
@@ -535,7 +543,7 @@ namespace offerte_creator
                 e.Handled = true;
             }
             if (!char.IsDigit(e.KeyChar) && e.KeyChar != '-')
-            { 
+            {
                 e.Handled = true; // Blokkeer de invoer
             }
         }
@@ -546,7 +554,7 @@ namespace offerte_creator
             string digitsOnly = new string(textBox.Text.Where(char.IsDigit).ToArray());
             if (digitsOnly.Length != 10 && !String.IsNullOrEmpty(textBox.Text))
             {
-                MessageBox.Show("Voer een geldig telefoonnummer in. Het nummer moet precies 10 cijfers bevatten.","Goed telefoonnummer",MessageBoxButtons.OK,MessageBoxIcon.Information);
+                MessageBox.Show("Voer een geldig telefoonnummer in. Het nummer moet precies 10 cijfers bevatten.", "Goed telefoonnummer", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 e.Cancel = true; // Voorkom dat de focus verplaatst wordt
             }
 
@@ -562,7 +570,7 @@ namespace offerte_creator
             }
         }
 
-       
+
 
         private void _BT_Update_Click(object sender, EventArgs e)
         {
@@ -612,7 +620,7 @@ namespace offerte_creator
             {
                 await DownloadFileAsync(downloadUrl, tempFilePath);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("Kon het bestand niet downloaden: " + ex.Message);
                 return;
@@ -643,7 +651,7 @@ namespace offerte_creator
             }
         }
 
-        private async Task DownloadPluginAsync(string url,String PluginFile)
+        private async Task DownloadPluginAsync(string url, String PluginFile)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -652,14 +660,14 @@ namespace offerte_creator
 
                 var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
                 response.EnsureSuccessStatusCode();
-                using (var fileStream = new FileStream(pathDocuments + "\\offerte creator\\Plugins\\"+ PluginFile + "2.dll", FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
+                using (var fileStream = new FileStream(pathDocuments + "\\offerte creator\\Plugins\\" + PluginFile + "2.dll", FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
                 {
                     await response.Content.CopyToAsync(fileStream);
                 }
                 client.Dispose();
             }
             File.Replace(pathDocuments + "\\offerte creator\\Plugins\\" + PluginFile + "2.dll", pathDocuments + "\\offerte creator\\Plugins\\" + PluginFile + ".dll", pathDocuments + "\\offerte creator\\" + PluginFile + ".dll", true);
-            
+
             MessageBox.Show("Update is uitgevoerd");
             Application.Restart();
         }
@@ -686,11 +694,11 @@ namespace offerte_creator
             }
 
 
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            string downloadUrl = $"https://jhsolutions.creakim.nl/OfferteCreator/plugins/"+pluginFile+"/" + pluginFile + ".dll"; // URL naar het installatiebestand
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            string downloadUrl = $"https://jhsolutions.creakim.nl/OfferteCreator/plugins/" + pluginFile + "/" + pluginFile + ".dll"; // URL naar het installatiebestand
             try
             {
-                await DownloadPluginAsync(downloadUrl,pluginFile);
+                await DownloadPluginAsync(downloadUrl, pluginFile);
             }
             catch (Exception ex)
             {
@@ -703,12 +711,15 @@ namespace offerte_creator
         {
             string licenseKey = txtLicenseKey.Text;
             string macAddress = txtMacAddress.Text;
-
             if (string.IsNullOrWhiteSpace(licenseKey) || string.IsNullOrWhiteSpace(macAddress))
             {
-                MessageBox.Show("Please enter both License Key and MAC Address.");
+                MessageBox.Show("Vul alstublieft de licentie sleutel in.");
                 return;
             }
+            Properties.Settings.Default.LicentieCode = licenseKey;
+            Properties.Settings.Default.Save();
+
+
 
             var values = new Dictionary<string, string>
         {
@@ -720,7 +731,7 @@ namespace offerte_creator
 
             try
             {
-                HttpResponseMessage response = await client.PostAsync("https://jhsolutions.creakim.nl/OfferteCreator/api/validate_license.php", content);
+                HttpResponseMessage response = await client.PostAsync("https://jhsolutions.creakim.nl/OfferteCreator/api/activate_license.php", content);
                 string responseString = await response.Content.ReadAsStringAsync();
                 JObject json = JObject.Parse(responseString);
 
@@ -742,54 +753,20 @@ namespace offerte_creator
             {
                 MessageBox.Show("Error: " + ex.Message);
             }
-        }
 
-        private string GetMacAddress()
-        {
-            var macAddresses = NetworkInterface.GetAllNetworkInterfaces()
-                .Where(nic => nic.OperationalStatus == OperationalStatus.Up)
-                .Select(nic => nic.GetPhysicalAddress().ToString())
-                .FirstOrDefault();
-
-            return macAddresses ?? "Unavailable";
         }
-        public static string GetHWID()
+        private void btnCheck_Click(object sender, EventArgs e)
         {
-            // Verkrijg CPU ID
-            //string cpuId = GetHardwareInfo("Win32_Processor", "ProcessorId");
-            // Verkrijg Motherboard ID
-            string motherboardId = GetHardwareInfo("Win32_BaseBoard", "SerialNumber");           
-            // Verkrijg Disk Serial Number
-            //string diskId = GetHardwareInfo("Win32_DiskDrive", "SerialNumber");
-            // Combineer en genereer hash
-            string hwid = motherboardId;
-            return ComputeSha256Hash(hwid);
-        }
-
-        private static string GetHardwareInfo(string wmiClass, string wmiProperty)
-        {
-            ManagementClass mc = new ManagementClass(wmiClass);
-            ManagementObjectCollection moc = mc.GetInstances();
-            foreach (ManagementObject mo in moc)
+            string licenseKey = txtLicenseKey.Text;
+            string macAddress = txtMacAddress.Text;
+            if (string.IsNullOrWhiteSpace(licenseKey) || string.IsNullOrWhiteSpace(macAddress))
             {
-                if (mo[wmiProperty] != null)
-                    return mo[wmiProperty].ToString();
+                MessageBox.Show("Vul alstublieft de licentie sleutel in.");
+                return;
             }
-            return string.Empty;
-        }
-
-        private static string ComputeSha256Hash(string rawData)
-        {
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    builder.Append(bytes[i].ToString("x2"));
-                }
-                return builder.ToString();
-            }
+            Properties.Settings.Default.LicentieCode = licenseKey;
+            Properties.Settings.Default.Save();
+            formMain.CheckLicentie();
         }
     }
 }

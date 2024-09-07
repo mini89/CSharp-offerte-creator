@@ -178,5 +178,17 @@ namespace offerte_creator.Properties {
                 this["LicentieCode"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int LicentieRetry {
+            get {
+                return ((int)(this["LicentieRetry"]));
+            }
+            set {
+                this["LicentieRetry"] = value;
+            }
+        }
     }
 }

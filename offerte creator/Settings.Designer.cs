@@ -30,6 +30,8 @@
         {
             this._PB_Logo = new System.Windows.Forms.PictureBox();
             this._GB_Company = new System.Windows.Forms.GroupBox();
+            this.lstPlugins = new System.Windows.Forms.ListBox();
+            this.txtMacAddress = new System.Windows.Forms.TextBox();
             this._TB_CompanyTown = new System.Windows.Forms.TextBox();
             this._L_CompanyTown = new System.Windows.Forms.Label();
             this._TB_CompanyBank = new System.Windows.Forms.TextBox();
@@ -73,10 +75,11 @@
             this._BT_RemovePlugIn = new System.Windows.Forms.Button();
             this.openFileDialogDLL = new System.Windows.Forms.OpenFileDialog();
             this._P_Scroll = new System.Windows.Forms.Panel();
+            this._L_LicentieNummer = new System.Windows.Forms.Label();
+            this.btnCheck = new System.Windows.Forms.Button();
             this.txtLicenseKey = new System.Windows.Forms.TextBox();
             this.btnActivate = new System.Windows.Forms.Button();
-            this.txtMacAddress = new System.Windows.Forms.TextBox();
-            this.lstPlugins = new System.Windows.Forms.ListBox();
+            this.panel3 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this._PB_Logo)).BeginInit();
             this._GB_Company.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._PB_Handtekening)).BeginInit();
@@ -85,6 +88,7 @@
             this._GB_Plugin.SuspendLayout();
             this.panel2.SuspendLayout();
             this._P_Scroll.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // _PB_Logo
@@ -102,6 +106,7 @@
             // _GB_Company
             // 
             this._GB_Company.Controls.Add(this.lstPlugins);
+            this._GB_Company.Controls.Add(this.txtMacAddress);
             this._GB_Company.Controls.Add(this._TB_CompanyTown);
             this._GB_Company.Controls.Add(this._L_CompanyTown);
             this._GB_Company.Controls.Add(this._TB_CompanyBank);
@@ -139,6 +144,22 @@
             this._GB_Company.TabIndex = 1;
             this._GB_Company.TabStop = false;
             this._GB_Company.Text = "Bedrijfs gegevens";
+            // 
+            // lstPlugins
+            // 
+            this.lstPlugins.FormattingEnabled = true;
+            this.lstPlugins.Location = new System.Drawing.Point(400, 239);
+            this.lstPlugins.Name = "lstPlugins";
+            this.lstPlugins.Size = new System.Drawing.Size(120, 95);
+            this.lstPlugins.TabIndex = 25;
+            this.lstPlugins.UseTabStops = false;
+            // 
+            // txtMacAddress
+            // 
+            this.txtMacAddress.Location = new System.Drawing.Point(420, 214);
+            this.txtMacAddress.Name = "txtMacAddress";
+            this.txtMacAddress.Size = new System.Drawing.Size(100, 20);
+            this.txtMacAddress.TabIndex = 7;
             // 
             // _TB_CompanyTown
             // 
@@ -543,8 +564,8 @@
             // _P_Scroll
             // 
             this._P_Scroll.AutoScroll = true;
-            this._P_Scroll.Controls.Add(this.txtMacAddress);
-            this._P_Scroll.Controls.Add(this.btnActivate);
+            this._P_Scroll.Controls.Add(this.panel3);
+            this._P_Scroll.Controls.Add(this._L_LicentieNummer);
             this._P_Scroll.Controls.Add(this.txtLicenseKey);
             this._P_Scroll.Controls.Add(this._GB_Plugin);
             this._P_Scroll.Controls.Add(this._GB_Company);
@@ -554,37 +575,52 @@
             this._P_Scroll.Size = new System.Drawing.Size(553, 539);
             this._P_Scroll.TabIndex = 5;
             // 
+            // _L_LicentieNummer
+            // 
+            this._L_LicentieNummer.AutoSize = true;
+            this._L_LicentieNummer.Location = new System.Drawing.Point(12, 504);
+            this._L_LicentieNummer.Name = "_L_LicentieNummer";
+            this._L_LicentieNummer.Size = new System.Drawing.Size(77, 13);
+            this._L_LicentieNummer.TabIndex = 8;
+            this._L_LicentieNummer.Text = "Licentie sleutel";
+            // 
+            // btnCheck
+            // 
+            this.btnCheck.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnCheck.Location = new System.Drawing.Point(75, 0);
+            this.btnCheck.Name = "btnCheck";
+            this.btnCheck.Size = new System.Drawing.Size(75, 23);
+            this.btnCheck.TabIndex = 6;
+            this.btnCheck.Text = "Controleer";
+            this.btnCheck.UseVisualStyleBackColor = true;
+            this.btnCheck.Click += new System.EventHandler(this.btnCheck_Click);
+            // 
             // txtLicenseKey
             // 
-            this.txtLicenseKey.Location = new System.Drawing.Point(78, 500);
+            this.txtLicenseKey.Location = new System.Drawing.Point(102, 500);
             this.txtLicenseKey.Name = "txtLicenseKey";
-            this.txtLicenseKey.Size = new System.Drawing.Size(100, 20);
+            this.txtLicenseKey.Size = new System.Drawing.Size(292, 20);
             this.txtLicenseKey.TabIndex = 5;
             // 
             // btnActivate
             // 
-            this.btnActivate.Location = new System.Drawing.Point(475, 498);
+            this.btnActivate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnActivate.Location = new System.Drawing.Point(0, 0);
             this.btnActivate.Name = "btnActivate";
             this.btnActivate.Size = new System.Drawing.Size(75, 23);
-            this.btnActivate.TabIndex = 6;
-            this.btnActivate.Text = "Activate";
+            this.btnActivate.TabIndex = 9;
+            this.btnActivate.Text = "Activeren";
             this.btnActivate.UseVisualStyleBackColor = true;
             this.btnActivate.Click += new System.EventHandler(this.btnActivate_Click);
             // 
-            // txtMacAddress
+            // panel3
             // 
-            this.txtMacAddress.Location = new System.Drawing.Point(315, 501);
-            this.txtMacAddress.Name = "txtMacAddress";
-            this.txtMacAddress.Size = new System.Drawing.Size(100, 20);
-            this.txtMacAddress.TabIndex = 7;
-            // 
-            // lstPlugins
-            // 
-            this.lstPlugins.FormattingEnabled = true;
-            this.lstPlugins.Location = new System.Drawing.Point(400, 239);
-            this.lstPlugins.Name = "lstPlugins";
-            this.lstPlugins.Size = new System.Drawing.Size(120, 95);
-            this.lstPlugins.TabIndex = 25;
+            this.panel3.Controls.Add(this.btnActivate);
+            this.panel3.Controls.Add(this.btnCheck);
+            this.panel3.Location = new System.Drawing.Point(400, 497);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(150, 23);
+            this.panel3.TabIndex = 10;
             // 
             // Settings
             // 
@@ -609,6 +645,7 @@
             this.panel2.ResumeLayout(false);
             this._P_Scroll.ResumeLayout(false);
             this._P_Scroll.PerformLayout();
+            this.panel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -661,8 +698,11 @@
         private System.Windows.Forms.Button _BT_Update;
         private System.Windows.Forms.Button _BT_UpdatePlugin;
         private System.Windows.Forms.TextBox txtMacAddress;
-        private System.Windows.Forms.Button btnActivate;
+        private System.Windows.Forms.Button btnCheck;
         private System.Windows.Forms.TextBox txtLicenseKey;
         private System.Windows.Forms.ListBox lstPlugins;
+        private System.Windows.Forms.Label _L_LicentieNummer;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Button btnActivate;
     }
 }

@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Management;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace offerte_creator
 {
@@ -104,8 +106,91 @@ namespace offerte_creator
             return JsonConvert.DeserializeObject<Customer>(JsonString);
         }
     }
+    public class Licentie
+    {
+        public class LicenseResponse
+        {
+            public bool IsValid { get; set; }
+            public List<string> Plugins { get; set; }
+        }
+        public static string GetHardwareInfo(string wmiClass, string wmiProperty)
+        {
+            ManagementClass mc = new ManagementClass(wmiClass);
+            ManagementObjectCollection moc = mc.GetInstances();
+            foreach (ManagementObject mo in moc)
+            {
+                if (mo[wmiProperty] != null)
+                    return mo[wmiProperty].ToString();
+            }
+            return string.Empty;
+        }
+        public static async Task<bool> VerifyLicenseAsync()
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    string motherboardId = Licentie.GetHardwareInfo("Win32_DiskDrive", "SerialNumber");
 
-    public class SharedSettings
+                    if (motherboardId.Length > 64)
+                    {
+                        // Truncate or handle the error accordingly
+                        motherboardId = motherboardId.Substring(0, 64);
+                    }
+
+                    string hwid = motherboardId;
+                    string JouwLicentieSleutel = Properties.Settings.Default.LicentieCode;
+                    Console.WriteLine("-----------------Sleutel = " + JouwLicentieSleutel);
+                    Console.WriteLine("-----------------MotherboardID = " + hwid);
+                    var values = new Dictionary<string, string>
+                {
+                    { "licenseKey", JouwLicentieSleutel },
+                    { "macAddress", hwid } // Gebruik de HWID zoals eerder besproken
+                };
+
+                    var content = new FormUrlEncodedContent(values);
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                    HttpResponseMessage response = await client.PostAsync("https://jhsolutions.creakim.nl/OfferteCreator/api/validate_license.php", content);
+                    Console.WriteLine("----------------- https://jhsolutions.creakim.nl/OfferteCreator/api/validate_license.php");
+                    Console.WriteLine("----------------- " + content);
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine("----------------- responseString = " + responseString);
+                    var result = JsonConvert.DeserializeObject<LicenseResponse>(responseString);
+                    Console.WriteLine("-----------------valid respone = " + result.IsValid);
+                    if (result.IsValid)
+                    {
+                        return result.IsValid; // Pas aan volgens je eigen logica
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public static async Task<bool> CheckForInternetConnection()
+    {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.GetAsync("https://google.com");
+                    return response.IsSuccessStatusCode;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+}
+
+public class SharedSettings
     {
         public static string CompanyName
         {

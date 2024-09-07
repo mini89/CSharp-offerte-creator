@@ -2,13 +2,12 @@
 using System.IO;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using System.Net.Http;
+using System.Threading.Tasks;
 using System.Net;
 using System.Reflection;
 using System.Linq;
 using System.Globalization;
+using System.Threading;
 
 namespace offerte_creator
 {
@@ -16,6 +15,8 @@ namespace offerte_creator
     {
         public List<IPlugin> _plugins = new List<IPlugin>();
         public int newID;
+        private readonly System.Threading.Timer _timer;
+        private int licentieRetry =0;
         String pathDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         public Form_Main()
         {
@@ -26,8 +27,112 @@ namespace offerte_creator
             {
                 File.Delete(tempFilePath); // Verwijder het oude bestand indien nodig
             }
+            licentieRetry = Properties.Settings.Default.LicentieRetry;
+            CheckLicentie();
             LoadPlugins();
             ConfigurePlugins();
+        }
+
+        public async Task CheckLicentie()
+        {
+            //hier moet licentie check komen
+            //1ste check kunnen we online komen? ja ->doe check | nee -> popup dat je niet online bent en geef keuzen uitstellen 5 maal
+            //2de check is licentie legid? ja -> start timer voor de volgende check | nee -> popup dat de licentie niet klopt en sluit applicatie
+            //3de check of alle plugins die hij heeft draaien ook betaald zijn? ja -> doorgaan met timer starten voor volgende check | Nee -> haal de nieuwe lijst binnen en start alle plugins die wel betaald zijn.
+            bool isOnline = await Licentie.CheckForInternetConnection();
+            if (isOnline)//check de internet verbinding
+            {
+                //internet is aanwezig
+                bool isLicenseValid = await Licentie.VerifyLicenseAsync();
+                if (isLicenseValid)
+                {
+                    //licentie is geldig
+                    licentieRetry = 0;
+                    Properties.Settings.Default.LicentieRetry = licentieRetry;
+                    Properties.Settings.Default.Save();
+                    _timer.Change(GetRandomInterval(), Timeout.Infinite);// Stel de timer opnieuw in voor de volgende check
+
+                }
+                else
+                {
+                    //licentie is niet geldig
+                    MessageBox.Show("Licentie is ongeldig. probeer deze aan te passen", "Licentie Fout", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                    var openForm = Application.OpenForms["Settings"]; // Zoek naar een geopende form met de naam "Settings"
+
+                    if (openForm != null)
+                    {
+                        // Als de form al bestaat, focus deze (haal naar voren)
+                        openForm.Focus();
+                        if (openForm.WindowState == FormWindowState.Minimized)
+                        {
+                            openForm.WindowState = FormWindowState.Normal; // Zorg dat het venster niet geminimaliseerd is
+                        }
+                    }
+                    else
+                    {
+                        // Als de form nog niet bestaat, maak een nieuwe instantie en toon deze
+                        Settings settings = new Settings();
+                        settings.formMain = this;
+                        DialogResult result = settings.ShowDialog();// open settings zodat ze de licentie kunnen aanpassen
+                        if (result == DialogResult.OK)// als settings opnieuw zijn opgeslagen
+                        {
+                            await CheckLicentie(); // check opnieuw de licentie
+                        }
+                        else // settings is zomaar weggeklikt
+                        {
+                            MessageBox.Show("Licentie is ongeldig. Neem contact op met de support.", "Licentie Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Application.Exit();// sluit de applicatie
+                        }
+                    }
+
+
+
+
+
+
+                   
+                }
+            }
+            else
+            {
+                //internet is niet aanwezig
+                DialogResult messageBoxResult = MessageBox.Show("Geen internetverbinding. De licentie kan niet worden gecontroleerd. Probeer het later opnieuw.", "Waarschuwing", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+                if (messageBoxResult == DialogResult.Retry)//proberen opnieuw de internet check
+                {
+                   await CheckLicentie();
+                }
+                else // hebben geannuleerd
+                {
+                    licentieRetry++;
+                    Properties.Settings.Default.LicentieRetry = licentieRetry;
+                    Properties.Settings.Default.Save();
+                    if (licentieRetry >= 5)// na 5 keer geannuleerd
+                    {
+                        MessageBox.Show("Licentie is ongeldig. Neem contact op met de support.", "Licentie Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Application.Exit(); // Sluit de applicatie
+                    }
+                    else // nog een uur uitstellen
+                    {
+                        int hours = (int)TimeSpan.FromHours(1).TotalMilliseconds;
+                        _timer.Change(hours, Timeout.Infinite);
+                    }
+}
+            }
+
+           
+          
+
+
+
+            // hier moet licentie check eindigen
+        }
+        private int GetRandomInterval()
+        {
+            Random rand = new Random();
+            int minHours = 1;
+            int maxHours = 12;
+            return (int)TimeSpan.FromHours(rand.Next(minHours, maxHours)).TotalMilliseconds;
         }
         //START PLUGIN GEDEELTE
         public void LoadPlugins()
@@ -479,6 +584,8 @@ namespace offerte_creator
         {
             return;
         }
+
+
                 
         //private void createOfferteToolStripMenuItem_Click(object sender, EventArgs e)
         //{
