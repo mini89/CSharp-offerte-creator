@@ -28,12 +28,15 @@ namespace offerte_creator
                 File.Delete(tempFilePath); // Verwijder het oude bestand indien nodig
             }
             licentieRetry = Properties.Settings.Default.LicentieRetry;
+            // Timer initialiseren
+            _timer = new System.Threading.Timer(TimerCallback, null, Timeout.Infinite, Timeout.Infinite);
+
             CheckLicentie();
             LoadPlugins();
             ConfigurePlugins();
         }
 
-        public async Task CheckLicentie()
+        public async Task<bool> CheckLicentie()
         {
             //hier moet licentie check komen
             //1ste check kunnen we online komen? ja ->doe check | nee -> popup dat je niet online bent en geef keuzen uitstellen 5 maal
@@ -42,22 +45,27 @@ namespace offerte_creator
             bool isOnline = await Licentie.CheckForInternetConnection();
             if (isOnline)//check de internet verbinding
             {
+                Console.WriteLine("-----------isOnline");
                 //internet is aanwezig
                 bool isLicenseValid = await Licentie.VerifyLicenseAsync();
                 if (isLicenseValid)
                 {
+                    Console.WriteLine("-----------isLicenseValid");
                     //licentie is geldig
                     licentieRetry = 0;
                     Properties.Settings.Default.LicentieRetry = licentieRetry;
                     Properties.Settings.Default.Save();
-                    _timer.Change(GetRandomInterval(), Timeout.Infinite);// Stel de timer opnieuw in voor de volgende check
-
+                    int randomInterval = GetRandomInterval();
+                    double needTime = TimeSpan.FromMilliseconds(randomInterval).TotalHours;
+                    Console.WriteLine("----------- "+ needTime);
+                    _timer.Change(randomInterval, Timeout.Infinite);// Stel de timer opnieuw in voor de volgende check
+                    Console.WriteLine("----------- return true");
+                    return true;
                 }
                 else
                 {
                     //licentie is niet geldig
                     MessageBox.Show("Licentie is ongeldig. probeer deze aan te passen", "Licentie Fout", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-
                     var openForm = Application.OpenForms["Settings"]; // Zoek naar een geopende form met de naam "Settings"
 
                     if (openForm != null)
@@ -85,13 +93,13 @@ namespace offerte_creator
                             Application.Exit();// sluit de applicatie
                         }
                     }
+                    return false;
 
 
 
 
 
 
-                   
                 }
             }
             else
@@ -100,7 +108,7 @@ namespace offerte_creator
                 DialogResult messageBoxResult = MessageBox.Show("Geen internetverbinding. De licentie kan niet worden gecontroleerd. Probeer het later opnieuw.", "Waarschuwing", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
                 if (messageBoxResult == DialogResult.Retry)//proberen opnieuw de internet check
                 {
-                   await CheckLicentie();
+                    await CheckLicentie();
                 }
                 else // hebben geannuleerd
                 {
@@ -117,7 +125,8 @@ namespace offerte_creator
                         int hours = (int)TimeSpan.FromHours(1).TotalMilliseconds;
                         _timer.Change(hours, Timeout.Infinite);
                     }
-}
+                }
+                return false;
             }
 
            
@@ -133,6 +142,11 @@ namespace offerte_creator
             int minHours = 1;
             int maxHours = 12;
             return (int)TimeSpan.FromHours(rand.Next(minHours, maxHours)).TotalMilliseconds;
+        }
+        private void TimerCallback(object state)
+        {
+            Console.WriteLine("Timer callback uitgevoerd.");
+            CheckLicentie();
         }
         //START PLUGIN GEDEELTE
         public void LoadPlugins()

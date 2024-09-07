@@ -56,7 +56,7 @@ namespace offerte_creator
             {
                 btnCheck.Visible = false;
             }
-            foreach (var item in Properties.Settings.Default.LicentiePlugins.Split('|'))
+            foreach (var item in Properties.Settings.Default.LicentiePlugins)
             {
                 lstPlugins.Items.Add(item);
             }
@@ -717,6 +717,7 @@ namespace offerte_creator
                 return;
             }
             Properties.Settings.Default.LicentieCode = licenseKey;
+            Properties.Settings.Default.LicentiePlugins = null;
             Properties.Settings.Default.Save();
 
 
@@ -741,6 +742,7 @@ namespace offerte_creator
                     foreach (var plugin in json["plugins"])
                     {
                         lstPlugins.Items.Add(plugin.ToString());
+
                     }
                     MessageBox.Show("License activated successfully.");
                 }
@@ -755,7 +757,7 @@ namespace offerte_creator
             }
 
         }
-        private void btnCheck_Click(object sender, EventArgs e)
+        private async void btnCheck_Click(object sender, EventArgs e)
         {
             string licenseKey = txtLicenseKey.Text;
             string macAddress = txtMacAddress.Text;
@@ -766,7 +768,13 @@ namespace offerte_creator
             }
             Properties.Settings.Default.LicentieCode = licenseKey;
             Properties.Settings.Default.Save();
-            formMain.CheckLicentie();
+            this.Cursor = Cursors.WaitCursor;
+            bool isLicenseValid = await formMain.CheckLicentie();
+            if (isLicenseValid)
+            {
+                this.Cursor = Cursors.Default;
+                MessageBox.Show("Licentie is goed", "Goede licentie", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
     }
 }

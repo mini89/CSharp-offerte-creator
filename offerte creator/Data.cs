@@ -140,8 +140,6 @@ namespace offerte_creator
 
                     string hwid = motherboardId;
                     string JouwLicentieSleutel = Properties.Settings.Default.LicentieCode;
-                    Console.WriteLine("-----------------Sleutel = " + JouwLicentieSleutel);
-                    Console.WriteLine("-----------------MotherboardID = " + hwid);
                     var values = new Dictionary<string, string>
                 {
                     { "licenseKey", JouwLicentieSleutel },
@@ -151,8 +149,6 @@ namespace offerte_creator
                     var content = new FormUrlEncodedContent(values);
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     HttpResponseMessage response = await client.PostAsync("https://jhsolutions.creakim.nl/OfferteCreator/api/validate_license.php", content);
-                    Console.WriteLine("----------------- https://jhsolutions.creakim.nl/OfferteCreator/api/validate_license.php");
-                    Console.WriteLine("----------------- " + content);
                     string responseString = await response.Content.ReadAsStringAsync();
                     Console.WriteLine("----------------- responseString = " + responseString);
                     var result = JsonConvert.DeserializeObject<LicenseResponse>(responseString);

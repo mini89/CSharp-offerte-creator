@@ -71,7 +71,7 @@ namespace offerte_creator
                     {
                         String plugins = reader.ReadToEnd().Trim();
                         String[] pluginsArray = plugins.Split('#');
-                        String[] LicentiePlugins = Properties.Settings.Default.LicentiePlugins.Split('|');
+                        var LicentiePlugins = Properties.Settings.Default.LicentiePlugins;
                         foreach (String plugin in pluginsArray)
                         {
                             if (!String.IsNullOrEmpty(plugin.Trim()))
