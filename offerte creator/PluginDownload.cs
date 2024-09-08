@@ -15,7 +15,6 @@ namespace offerte_creator
 {
     public partial class PluginDownload : Form
     {
-        public Form_Main formMain;
         String pathDocuments;
         public PluginDownload()
         {
@@ -44,12 +43,13 @@ namespace offerte_creator
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Kon niet de gegevens binnenhalen");
+                    MessageBox.Show("Kon niet de gegevens binnenhalen \r "+ex.Message);
                     return;
                 }
             }
             catch(Exception ex)
             {
+                Console.WriteLine("-------------try  string readmeUrl = 'https://jhsolutions.creakim.nl/OfferteCreator/plugins/'+ pluginName + '/readme.txt' \r"+ ex.Message);
                 _RB_Details.Clear();
                 _BT_Install.Enabled = false;
             }
@@ -118,14 +118,14 @@ namespace offerte_creator
         {
             this.Close();
         }
-        private void StopPlugins()
-        {
-            foreach (var plugin in formMain._plugins)
-            {
-                plugin.Stop();
-            }
-            formMain._plugins.Clear(); // Optioneel: leeg de lijst met plugins na stoppen
-        }
+        //private void StopPlugins()
+        //{
+        //    foreach (var plugin in Plugins._plugins)
+        //    {
+        //        plugin.Stop();
+        //    }
+        //    Plugins._plugins.Clear(); // Optioneel: leeg de lijst met plugins na stoppen
+        //}
         private async Task DownloadPluginAsync(string url, String PluginFile)
         {
             using (HttpClient client = new HttpClient())
@@ -146,7 +146,7 @@ namespace offerte_creator
         }
         private async void _BT_Install_Click(object sender, EventArgs e)
         {
-            StopPlugins();
+            Plugins.StopPlugins();
             String pluginFile = _LB_Plugins.Items[_LB_Plugins.SelectedIndex].ToString();
             string downloadUrl = $"https://jhsolutions.creakim.nl/OfferteCreator/plugins/" + pluginFile + "/" + pluginFile + ".dll"; // URL naar het installatiebestand
             try

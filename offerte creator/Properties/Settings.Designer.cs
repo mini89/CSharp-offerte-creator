@@ -170,7 +170,7 @@ namespace offerte_creator.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("DemoLicentie")]
         public string LicentieCode {
             get {
                 return ((string)(this["LicentieCode"]));

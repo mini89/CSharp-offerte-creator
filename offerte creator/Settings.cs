@@ -31,7 +31,6 @@ namespace offerte_creator
         int IndexPlugIn;
 
         private static readonly HttpClient client = new HttpClient();
-        public Form_Main formMain;
         private Version version;
         private void Settings_Load(object sender, EventArgs e)
         {
@@ -48,7 +47,11 @@ namespace offerte_creator
             txtMacAddress.Text = motherboardId;
 
             txtLicenseKey.Text = Properties.Settings.Default.LicentieCode;
-            if (txtLicenseKey.Text.Length >= 5)
+            if (txtLicenseKey.Text.Equals("DemoLicentie"))
+            {
+                txtMacAddress.Text = "123456789098";
+            }
+            if (txtLicenseKey.Text.Length >= 5 && txtLicenseKey.Text != "DemoLicentie")
             {
                 btnCheck.Visible = true;
             }
@@ -159,11 +162,11 @@ namespace offerte_creator
         }
         private void StopPlugins()
         {
-            foreach (var plugin in formMain._plugins)
+            foreach (var plugin in Plugins._plugins)
             {
                 plugin.Stop();
             }
-            formMain._plugins.Clear();// Optioneel: leeg de lijst met plugins na stoppen
+            Plugins._plugins.Clear();// Optioneel: leeg de lijst met plugins na stoppen
         }
         public void LoadPlugins()
         {
@@ -388,6 +391,7 @@ namespace offerte_creator
             }
             catch (Exception ex)
             {
+                Console.WriteLine("-------------try  if (LB_Plugins.Items[IndexPlugIn].ToString().Contains('->')) \r" + ex.Message);
                 _BT_UpdatePlugin.Enabled = false;
                 _BT_RemovePlugIn.Enabled = false;
             }
@@ -428,8 +432,12 @@ namespace offerte_creator
                 try
                 {
                     String PluginFile = Path.GetFileNameWithoutExtension(deletedPluginPath);
-                    File.Delete(deletedPluginPath);
-                    LB_Plugins.Items.Clear();
+                    String TempRemoveFolder = Path.Combine(Path.GetTempPath()+ "\\offerte creator\\", "Plugins");
+                    Directory.CreateDirectory(TempRemoveFolder);
+                    File.Copy(deletedPluginPath, TempRemoveFolder +"\\"+ PluginFile + ".dll");
+                    Application.Restart();
+                    //File.Delete(deletedPluginPath);
+                    //LB_Plugins.Items.Clear();
                 }
                 catch (Exception ex)
                 {
@@ -442,7 +450,6 @@ namespace offerte_creator
         private void _BT_AddPlugIn_Click(object sender, EventArgs e)
         {
             PluginDownload pluginDownload = new PluginDownload();
-            pluginDownload.formMain = formMain;
             pluginDownload.ShowDialog();
             //string pluginsPath = Path.Combine(pathDocuments+ "\\offerte creator\\", "Plugins");
             //DialogResult result = openFileDialogDLL.ShowDialog();
@@ -711,6 +718,13 @@ namespace offerte_creator
         {
             string licenseKey = txtLicenseKey.Text;
             string macAddress = txtMacAddress.Text;
+            if (licenseKey.Equals("DemoLicentie"))
+            {
+                await Licentie.VerifyLicenseAsync();
+                return;
+            }
+
+
             if (string.IsNullOrWhiteSpace(licenseKey) || string.IsNullOrWhiteSpace(macAddress))
             {
                 MessageBox.Show("Vul alstublieft de licentie sleutel in.");
@@ -769,11 +783,11 @@ namespace offerte_creator
             Properties.Settings.Default.LicentieCode = licenseKey;
             Properties.Settings.Default.Save();
             this.Cursor = Cursors.WaitCursor;
-            bool isLicenseValid = await formMain.CheckLicentie();
+            bool isLicenseValid = await Licentie.VerifyLicenseAsync();
             if (isLicenseValid)
             {
                 this.Cursor = Cursors.Default;
-                MessageBox.Show("Licentie is goed", "Goede licentie", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Licentie en plugins zijn goed maar vergeet de licentie niet op te slaan!", "Goede licentie", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }

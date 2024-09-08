@@ -40,7 +40,7 @@
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" /&gt;</Value>
     </Setting>
     <Setting Name="LicentieCode" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">DemoLicentie</Value>
     </Setting>
     <Setting Name="LicentieRetry" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>

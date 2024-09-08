@@ -75,11 +75,11 @@
             this._BT_RemovePlugIn = new System.Windows.Forms.Button();
             this.openFileDialogDLL = new System.Windows.Forms.OpenFileDialog();
             this._P_Scroll = new System.Windows.Forms.Panel();
-            this._L_LicentieNummer = new System.Windows.Forms.Label();
-            this.btnCheck = new System.Windows.Forms.Button();
-            this.txtLicenseKey = new System.Windows.Forms.TextBox();
-            this.btnActivate = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.btnActivate = new System.Windows.Forms.Button();
+            this.btnCheck = new System.Windows.Forms.Button();
+            this._L_LicentieNummer = new System.Windows.Forms.Label();
+            this.txtLicenseKey = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this._PB_Logo)).BeginInit();
             this._GB_Company.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._PB_Handtekening)).BeginInit();
@@ -153,6 +153,7 @@
             this.lstPlugins.Size = new System.Drawing.Size(120, 95);
             this.lstPlugins.TabIndex = 25;
             this.lstPlugins.UseTabStops = false;
+            this.lstPlugins.Visible = false;
             // 
             // txtMacAddress
             // 
@@ -160,6 +161,7 @@
             this.txtMacAddress.Name = "txtMacAddress";
             this.txtMacAddress.Size = new System.Drawing.Size(100, 20);
             this.txtMacAddress.TabIndex = 7;
+            this.txtMacAddress.Visible = false;
             // 
             // _TB_CompanyTown
             // 
@@ -575,32 +577,14 @@
             this._P_Scroll.Size = new System.Drawing.Size(553, 539);
             this._P_Scroll.TabIndex = 5;
             // 
-            // _L_LicentieNummer
+            // panel3
             // 
-            this._L_LicentieNummer.AutoSize = true;
-            this._L_LicentieNummer.Location = new System.Drawing.Point(12, 504);
-            this._L_LicentieNummer.Name = "_L_LicentieNummer";
-            this._L_LicentieNummer.Size = new System.Drawing.Size(77, 13);
-            this._L_LicentieNummer.TabIndex = 8;
-            this._L_LicentieNummer.Text = "Licentie sleutel";
-            // 
-            // btnCheck
-            // 
-            this.btnCheck.Dock = System.Windows.Forms.DockStyle.Right;
-            this.btnCheck.Location = new System.Drawing.Point(75, 0);
-            this.btnCheck.Name = "btnCheck";
-            this.btnCheck.Size = new System.Drawing.Size(75, 23);
-            this.btnCheck.TabIndex = 6;
-            this.btnCheck.Text = "Controleer";
-            this.btnCheck.UseVisualStyleBackColor = true;
-            this.btnCheck.Click += new System.EventHandler(this.btnCheck_Click);
-            // 
-            // txtLicenseKey
-            // 
-            this.txtLicenseKey.Location = new System.Drawing.Point(102, 500);
-            this.txtLicenseKey.Name = "txtLicenseKey";
-            this.txtLicenseKey.Size = new System.Drawing.Size(292, 20);
-            this.txtLicenseKey.TabIndex = 5;
+            this.panel3.Controls.Add(this.btnActivate);
+            this.panel3.Controls.Add(this.btnCheck);
+            this.panel3.Location = new System.Drawing.Point(400, 497);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(150, 23);
+            this.panel3.TabIndex = 10;
             // 
             // btnActivate
             // 
@@ -613,14 +597,32 @@
             this.btnActivate.UseVisualStyleBackColor = true;
             this.btnActivate.Click += new System.EventHandler(this.btnActivate_Click);
             // 
-            // panel3
+            // btnCheck
             // 
-            this.panel3.Controls.Add(this.btnActivate);
-            this.panel3.Controls.Add(this.btnCheck);
-            this.panel3.Location = new System.Drawing.Point(400, 497);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(150, 23);
-            this.panel3.TabIndex = 10;
+            this.btnCheck.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnCheck.Location = new System.Drawing.Point(75, 0);
+            this.btnCheck.Name = "btnCheck";
+            this.btnCheck.Size = new System.Drawing.Size(75, 23);
+            this.btnCheck.TabIndex = 6;
+            this.btnCheck.Text = "Controleer";
+            this.btnCheck.UseVisualStyleBackColor = true;
+            this.btnCheck.Click += new System.EventHandler(this.btnCheck_Click);
+            // 
+            // _L_LicentieNummer
+            // 
+            this._L_LicentieNummer.AutoSize = true;
+            this._L_LicentieNummer.Location = new System.Drawing.Point(12, 504);
+            this._L_LicentieNummer.Name = "_L_LicentieNummer";
+            this._L_LicentieNummer.Size = new System.Drawing.Size(77, 13);
+            this._L_LicentieNummer.TabIndex = 8;
+            this._L_LicentieNummer.Text = "Licentie sleutel";
+            // 
+            // txtLicenseKey
+            // 
+            this.txtLicenseKey.Location = new System.Drawing.Point(102, 500);
+            this.txtLicenseKey.Name = "txtLicenseKey";
+            this.txtLicenseKey.Size = new System.Drawing.Size(292, 20);
+            this.txtLicenseKey.TabIndex = 5;
             // 
             // Settings
             // 

@@ -13,7 +13,7 @@ namespace offerte_creator
 {
     public partial class Form_Main : Form
     {
-        public List<IPlugin> _plugins = new List<IPlugin>();
+        
         public int newID;
         private readonly System.Threading.Timer _timer;
         private int licentieRetry =0;
@@ -21,7 +21,41 @@ namespace offerte_creator
         public Form_Main()
         {
             InitializeComponent();
+            Plugins._plugins = new List<IPlugin>();
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            
+            String TempRemoveFolder = Path.Combine(Path.GetTempPath()+ "\\offerte creator\\", "Plugins");
+            if (Directory.Exists(TempRemoveFolder))
+            {
+                Thread.Sleep(500);
+                string pluginsPath = Path.Combine(pathDocuments + "\\offerte creator\\", "Plugins");
+                var pluginFiles = Directory.GetFiles(TempRemoveFolder, "*.dll");
+                foreach (var file in pluginFiles)
+                {
+                    String PluginFile = Path.GetFileNameWithoutExtension(file);
+                    try
+                    {
+                        File.Delete(pluginsPath +"\\"+ PluginFile + ".dll");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Er is iets fout gegaan met verwijderen \r\r" + ex.Message, "error delete plugin", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                Directory.Delete(TempRemoveFolder, true);
+            }
+
+
+            
+
+
+
+
+
+
+
+
+
             string tempFilePath = Path.Combine(Path.GetTempPath(), "setup.exe");
             if (File.Exists(tempFilePath))
             {
@@ -45,26 +79,23 @@ namespace offerte_creator
             bool isOnline = await Licentie.CheckForInternetConnection();
             if (isOnline)//check de internet verbinding
             {
-                Console.WriteLine("-----------isOnline");
                 //internet is aanwezig
                 bool isLicenseValid = await Licentie.VerifyLicenseAsync();
                 if (isLicenseValid)
                 {
-                    Console.WriteLine("-----------isLicenseValid");
                     //licentie is geldig
                     licentieRetry = 0;
                     Properties.Settings.Default.LicentieRetry = licentieRetry;
                     Properties.Settings.Default.Save();
                     int randomInterval = GetRandomInterval();
                     double needTime = TimeSpan.FromMilliseconds(randomInterval).TotalHours;
-                    Console.WriteLine("----------- "+ needTime);
                     _timer.Change(randomInterval, Timeout.Infinite);// Stel de timer opnieuw in voor de volgende check
-                    Console.WriteLine("----------- return true");
                     return true;
                 }
                 else
                 {
                     //licentie is niet geldig
+                    this.Cursor = Cursors.Default;
                     MessageBox.Show("Licentie is ongeldig. probeer deze aan te passen", "Licentie Fout", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     var openForm = Application.OpenForms["Settings"]; // Zoek naar een geopende form met de naam "Settings"
 
@@ -81,7 +112,6 @@ namespace offerte_creator
                     {
                         // Als de form nog niet bestaat, maak een nieuwe instantie en toon deze
                         Settings settings = new Settings();
-                        settings.formMain = this;
                         DialogResult result = settings.ShowDialog();// open settings zodat ze de licentie kunnen aanpassen
                         if (result == DialogResult.OK)// als settings opnieuw zijn opgeslagen
                         {
@@ -143,10 +173,10 @@ namespace offerte_creator
             int maxHours = 12;
             return (int)TimeSpan.FromHours(rand.Next(minHours, maxHours)).TotalMilliseconds;
         }
-        private void TimerCallback(object state)
+        private async void TimerCallback(object state)
         {
             Console.WriteLine("Timer callback uitgevoerd.");
-            CheckLicentie();
+            await CheckLicentie();
         }
         //START PLUGIN GEDEELTE
         public void LoadPlugins()
@@ -157,7 +187,7 @@ namespace offerte_creator
             {
                 File.Delete(pathDocuments + "\\offerte creator\\" + item.Split('\\')[5]);
             }
-            _plugins.Clear();
+            Plugins._plugins.Clear();
             string pluginsPath = Path.Combine(pathDocuments+ "\\offerte creator\\", "Plugins");
             if (!Directory.Exists(pluginsPath))
             {
@@ -173,22 +203,14 @@ namespace offerte_creator
                 foreach (var type in pluginTypes)
                 {
                     var plugin = (IPlugin)Activator.CreateInstance(type);
-                    _plugins.Add(plugin);
+                    Plugins._plugins.Add(plugin);
                 }
             }
-        }
-        private void StopPlugins()
-        {
-            foreach (var plugin in _plugins)
-            {
-                plugin.Stop();
-            }
-            _plugins.Clear(); // Optioneel: leeg de lijst met plugins na stoppen
         }
 
         public void ConfigurePlugins()
         {
-            foreach (var plugin in _plugins)
+            foreach (var plugin in Plugins._plugins)
             {
                 plugin.Configure(this);
             }
@@ -200,7 +222,7 @@ namespace offerte_creator
 
         public Boolean LoadFile = false;
         public Boolean Indicatie = false;
-        private async void Form_Main_Load(object sender, EventArgs e)
+        private void Form_Main_Load(object sender, EventArgs e)
         {
            
 
@@ -399,7 +421,6 @@ namespace offerte_creator
                             break;
                         case DialogResult.Cancel:
                             return;
-                            break;
                     }
 
 
@@ -479,12 +500,11 @@ namespace offerte_creator
         private void instellingenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Settings settings = new Settings();
-            settings.formMain = this;
             DialogResult result = settings.ShowDialog();
             if(result == DialogResult.OK)
             {
-                StopPlugins();
-                _plugins.Clear();
+                Plugins.StopPlugins();
+                Plugins._plugins.Clear();
                 LoadPlugins();
                 ConfigurePlugins();
             }

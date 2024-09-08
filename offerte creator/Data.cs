@@ -2,11 +2,13 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Management;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace offerte_creator
 {
@@ -106,6 +108,19 @@ namespace offerte_creator
             return JsonConvert.DeserializeObject<Customer>(JsonString);
         }
     }
+    public class Plugins
+    {
+
+        public static List<IPlugin> _plugins;
+        public static void StopPlugins()
+        {
+            foreach (var plugin in _plugins)
+            {
+                plugin.Stop();
+            }
+            _plugins.Clear();// Optioneel: leeg de lijst met plugins na stoppen
+        }
+    }
     public class Licentie
     {
         public class LicenseResponse
@@ -136,10 +151,10 @@ namespace offerte_creator
                     {
                         // Truncate or handle the error accordingly
                         motherboardId = motherboardId.Substring(0, 64);
-                    }
-
-                    string hwid = motherboardId;
+                    }                    
                     string JouwLicentieSleutel = Properties.Settings.Default.LicentieCode;
+                    string hwid = JouwLicentieSleutel.Equals("DemoLicentie") ? "123456789098" : motherboardId;
+
                     var values = new Dictionary<string, string>
                 {
                     { "licenseKey", JouwLicentieSleutel },
@@ -150,10 +165,17 @@ namespace offerte_creator
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     HttpResponseMessage response = await client.PostAsync("https://jhsolutions.creakim.nl/OfferteCreator/api/validate_license.php", content);
                     string responseString = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine("----------------- responseString = " + responseString);
                     var result = JsonConvert.DeserializeObject<LicenseResponse>(responseString);
-                    Console.WriteLine("-----------------valid respone = " + result.IsValid);
-                    if (result.IsValid)
+                    Properties.Settings.Default.LicentiePlugins.Clear();
+                    Properties.Settings.Default.Save();
+                    foreach (var plugin in result.Plugins)
+                    {
+                        Properties.Settings.Default.LicentiePlugins.Add(plugin);
+                    }
+                    Properties.Settings.Default.Save();
+                    bool resultPlugins = await CheckAndRemoveIllegalPlugins();
+
+                    if (result.IsValid && resultPlugins)
                     {
                         return result.IsValid; // Pas aan volgens je eigen logica
                     }
@@ -169,7 +191,7 @@ namespace offerte_creator
             }
         }
         public static async Task<bool> CheckForInternetConnection()
-    {
+        {
             try
             {
                 using (HttpClient client = new HttpClient())
@@ -183,8 +205,90 @@ namespace offerte_creator
                 return false;
             }
         }
+        public static async Task<bool> CheckAndRemoveIllegalPlugins()
+        {
+            // Path naar de plugins map
+            string pathDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string pluginsPath = Path.Combine(pathDocuments, "offerte creator", "Plugins");
 
-}
+            // Lijst van gekochte plugins
+            List<string> licentiePlugins = Properties.Settings.Default.LicentiePlugins?.Cast<string>().ToList() ?? new List<string>();
+
+            // Controleer of de map bestaat
+            if (Directory.Exists(pluginsPath))
+            {
+                // Haal alle plugins op die in de Plugins-map staan
+                string[] installedPlugins = Directory.GetFiles(pluginsPath, "*.dll");
+
+                // Lijst om illegale plugins op te slaan
+                List<string> illegalePlugins = new List<string>();
+
+                foreach (string plugin in installedPlugins)
+                {
+                    // Haal de bestandsnaam van de plugin op zonder pad
+                    string pluginName = Path.GetFileNameWithoutExtension(plugin);
+
+                    // Controleer of deze plugin niet in de gekochte lijst staat
+                    if (!licentiePlugins.Contains(pluginName, StringComparer.OrdinalIgnoreCase))
+                    {
+                        // Voeg toe aan de lijst van illegale plugins
+                        illegalePlugins.Add(plugin);
+                    }
+                }
+
+                // Als er illegale plugins zijn
+                if (illegalePlugins.Count > 0)
+                {
+                    String illegaleNames = null;
+                    foreach (var item in illegalePlugins)
+                    {
+                        string pluginName = Path.GetFileNameWithoutExtension(item);
+                        illegaleNames += "- " + pluginName + "\r";
+                    }
+                    MessageBox.Show($"er zijn illegale plugins gevonden: \r\r {illegaleNames} \r Deze moeten verwijderd of gekocht worden! \r Doe daarna weer een licentie check", "Illegal plugins", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    // Ga naar de settings form toe
+                    var openForm = Application.OpenForms["Settings"]; // Zoek naar een geopende form met de naam "Settings"
+
+                    if (openForm != null)
+                    {
+                        // Als de form al bestaat, focus deze (haal naar voren)
+                        openForm.Focus();
+                        if (openForm.WindowState == FormWindowState.Minimized)
+                        {
+                            openForm.WindowState = FormWindowState.Normal; // Zorg dat het venster niet geminimaliseerd is
+                        }
+                    }
+                    else
+                    {
+                        // Als de form nog niet bestaat, maak een nieuwe instantie en toon deze
+                        Settings settings = new Settings();
+                        DialogResult result = settings.ShowDialog();// open settings zodat ze de licentie kunnen aanpassen
+                        if (result == DialogResult.OK)// als settings opnieuw zijn opgeslagen
+                        {
+                            bool isLicenseValid = await Licentie.VerifyLicenseAsync(); // check opnieuw de licentie
+                        }
+                        else // settings is zomaar weggeklikt
+                        {
+                            MessageBox.Show("Licentie is ongeldig. Neem contact op met de support.", "Licentie Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Application.Exit();// sluit de applicatie
+                        }
+                    }
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                MessageBox.Show($"De plugin map '{pluginsPath}' bestaat niet.", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return true;
+            }
+        }
+
+    }
 
 public class SharedSettings
     {
